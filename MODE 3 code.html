@@ -1,0 +1,857 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Brew & Bean — Order Online</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --cream: #fdf6ec;
+    --espresso: #2c1a0e;
+    --caramel: #c8813a;
+    --latte: #d4a96a;
+    --foam: #f5ede0;
+    --bark: #6b3f1f;
+    --mist: #ede4d8;
+    --text: #3a2210;
+  }
+
+  body {
+    background: var(--cream);
+    color: var(--text);
+    font-family: 'DM Sans', sans-serif;
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+
+  /* Grain overlay */
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.75' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.04'/%3E%3C/svg%3E");
+    pointer-events: none;
+    z-index: 999;
+    opacity: 0.5;
+  }
+
+  /* Header */
+  header {
+    background: var(--espresso);
+    color: var(--cream);
+    padding: 20px 40px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    box-shadow: 0 4px 24px rgba(44,26,14,0.18);
+  }
+
+  .logo {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.6rem;
+    letter-spacing: 0.04em;
+  }
+
+  .logo span { color: var(--caramel); font-style: italic; }
+
+  .header-tag {
+    font-size: 0.78rem;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    opacity: 0.55;
+    font-weight: 300;
+  }
+
+  /* Layout */
+  .layout {
+    display: grid;
+    grid-template-columns: 1fr 380px;
+    gap: 0;
+    max-width: 1200px;
+    margin: 0 auto;
+    min-height: calc(100vh - 68px);
+  }
+
+  /* LEFT: Menu builder */
+  .menu-panel {
+    padding: 48px 48px 48px 48px;
+    border-right: 1.5px solid var(--mist);
+  }
+
+  .section-label {
+    font-size: 0.7rem;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    color: var(--bark);
+    font-weight: 500;
+    margin-bottom: 6px;
+  }
+
+  .section-title {
+    font-family: 'Playfair Display', serif;
+    font-size: 2rem;
+    color: var(--espresso);
+    margin-bottom: 32px;
+    line-height: 1.15;
+  }
+
+  /* Drink cards */
+  .drink-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 14px;
+    margin-bottom: 40px;
+  }
+
+  .drink-card {
+    border: 2px solid var(--mist);
+    border-radius: 16px;
+    padding: 18px 16px 14px;
+    cursor: pointer;
+    transition: all 0.22s ease;
+    background: var(--foam);
+    position: relative;
+    user-select: none;
+  }
+
+  .drink-card:hover {
+    border-color: var(--latte);
+    transform: translateY(-2px);
+    box-shadow: 0 8px 24px rgba(200,129,58,0.12);
+  }
+
+  .drink-card.selected {
+    border-color: var(--caramel);
+    background: #fff8f0;
+    box-shadow: 0 0 0 3px rgba(200,129,58,0.15), 0 8px 28px rgba(200,129,58,0.15);
+  }
+
+  .drink-card.selected::after {
+    content: '✓';
+    position: absolute;
+    top: 10px; right: 12px;
+    width: 22px; height: 22px;
+    background: var(--caramel);
+    color: white;
+    border-radius: 50%;
+    font-size: 0.65rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 700;
+  }
+
+  .drink-icon { font-size: 2rem; margin-bottom: 8px; display: block; }
+
+  .drink-name {
+    font-family: 'Playfair Display', serif;
+    font-size: 0.95rem;
+    color: var(--espresso);
+    margin-bottom: 2px;
+  }
+
+  .drink-desc {
+    font-size: 0.7rem;
+    color: var(--bark);
+    opacity: 0.75;
+    line-height: 1.4;
+    margin-bottom: 6px;
+  }
+
+  .drink-price {
+    font-size: 0.85rem;
+    font-weight: 500;
+    color: var(--caramel);
+  }
+
+  /* Divider */
+  .divider {
+    border: none;
+    border-top: 1.5px solid var(--mist);
+    margin: 32px 0;
+  }
+
+  /* Size selector */
+  .size-row {
+    display: flex;
+    gap: 12px;
+    margin-bottom: 36px;
+  }
+
+  .size-btn {
+    flex: 1;
+    border: 2px solid var(--mist);
+    border-radius: 12px;
+    padding: 14px 8px;
+    background: var(--foam);
+    cursor: pointer;
+    text-align: center;
+    transition: all 0.18s ease;
+    font-family: 'DM Sans', sans-serif;
+  }
+
+  .size-btn:hover { border-color: var(--latte); }
+
+  .size-btn.selected {
+    border-color: var(--caramel);
+    background: #fff8f0;
+  }
+
+  .size-icon { font-size: 1.5rem; display: block; margin-bottom: 4px; }
+  .size-name { font-size: 0.8rem; font-weight: 500; color: var(--espresso); display: block; }
+  .size-oz { font-size: 0.68rem; color: var(--bark); opacity: 0.65; display: block; }
+  .size-delta { font-size: 0.7rem; color: var(--caramel); font-weight: 500; display: block; margin-top: 2px; }
+
+  /* Add-ons */
+  .addons-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 10px;
+    margin-bottom: 36px;
+  }
+
+  .addon-check {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 12px 14px;
+    border: 2px solid var(--mist);
+    border-radius: 12px;
+    background: var(--foam);
+    cursor: pointer;
+    transition: all 0.18s ease;
+    user-select: none;
+  }
+
+  .addon-check:hover { border-color: var(--latte); }
+  .addon-check.checked { border-color: var(--caramel); background: #fff8f0; }
+
+  .addon-check input[type="checkbox"] { display: none; }
+
+  .addon-box {
+    width: 18px; height: 18px;
+    border: 2px solid var(--latte);
+    border-radius: 5px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    transition: all 0.15s;
+    background: white;
+  }
+
+  .addon-check.checked .addon-box {
+    background: var(--caramel);
+    border-color: var(--caramel);
+  }
+
+  .addon-check.checked .addon-box::after {
+    content: '';
+    width: 5px; height: 9px;
+    border: 2px solid white;
+    border-top: none;
+    border-left: none;
+    transform: rotate(45deg) translateY(-1px);
+    display: block;
+  }
+
+  .addon-info { flex: 1; }
+  .addon-name { font-size: 0.82rem; font-weight: 500; color: var(--espresso); display: block; }
+  .addon-price { font-size: 0.7rem; color: var(--caramel); }
+
+  /* Quantity */
+  .quantity-row {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    margin-bottom: 36px;
+  }
+
+  .qty-label { font-size: 0.82rem; font-weight: 500; color: var(--espresso); }
+
+  .qty-control {
+    display: flex;
+    align-items: center;
+    gap: 0;
+    border: 2px solid var(--mist);
+    border-radius: 12px;
+    overflow: hidden;
+    background: var(--foam);
+  }
+
+  .qty-btn {
+    width: 40px; height: 40px;
+    border: none;
+    background: transparent;
+    font-size: 1.2rem;
+    cursor: pointer;
+    color: var(--bark);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: background 0.15s;
+  }
+
+  .qty-btn:hover { background: var(--mist); }
+
+  .qty-input {
+    width: 52px;
+    text-align: center;
+    border: none;
+    background: transparent;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 1rem;
+    font-weight: 500;
+    color: var(--espresso);
+    outline: none;
+    -moz-appearance: textfield;
+  }
+  .qty-input::-webkit-inner-spin-button,
+  .qty-input::-webkit-outer-spin-button { -webkit-appearance: none; }
+
+  /* Special instructions */
+  .instructions-area {
+    width: 100%;
+    border: 2px solid var(--mist);
+    border-radius: 12px;
+    padding: 12px 16px;
+    background: var(--foam);
+    font-family: 'DM Sans', sans-serif;
+    font-size: 0.85rem;
+    color: var(--text);
+    resize: none;
+    outline: none;
+    transition: border-color 0.18s;
+    min-height: 80px;
+  }
+
+  .instructions-area:focus { border-color: var(--latte); }
+  .instructions-area::placeholder { color: var(--bark); opacity: 0.5; }
+
+  /* RIGHT: Order summary */
+  .summary-panel {
+    background: var(--espresso);
+    color: var(--cream);
+    padding: 48px 36px;
+    display: flex;
+    flex-direction: column;
+    position: sticky;
+    top: 68px;
+    height: calc(100vh - 68px);
+    overflow-y: auto;
+  }
+
+  .summary-label {
+    font-size: 0.68rem;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    color: var(--latte);
+    margin-bottom: 6px;
+  }
+
+  .summary-title {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.6rem;
+    margin-bottom: 32px;
+    line-height: 1.2;
+  }
+
+  /* Order item display */
+  .order-item {
+    background: rgba(255,255,255,0.06);
+    border: 1px solid rgba(255,255,255,0.1);
+    border-radius: 14px;
+    padding: 18px;
+    margin-bottom: 14px;
+    animation: slideIn 0.3s ease;
+  }
+
+  @keyframes slideIn {
+    from { opacity: 0; transform: translateY(8px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  .order-drink {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.05rem;
+    margin-bottom: 4px;
+  }
+
+  .order-size {
+    font-size: 0.73rem;
+    color: var(--latte);
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    margin-bottom: 8px;
+  }
+
+  .order-addons {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    margin-bottom: 10px;
+  }
+
+  .addon-tag {
+    background: rgba(200,129,58,0.25);
+    border: 1px solid rgba(200,129,58,0.4);
+    color: var(--latte);
+    border-radius: 20px;
+    padding: 2px 10px;
+    font-size: 0.68rem;
+  }
+
+  .order-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  .order-qty { font-size: 0.78rem; color: rgba(253,246,236,0.5); }
+  .order-subtotal { font-size: 0.9rem; font-weight: 500; color: var(--caramel); }
+
+  /* Empty state */
+  .empty-state {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    opacity: 0.45;
+    padding: 20px;
+  }
+
+  .empty-icon { font-size: 3.5rem; margin-bottom: 14px; }
+  .empty-text { font-family: 'Playfair Display', serif; font-size: 1.1rem; font-style: italic; }
+
+  /* Totals */
+  .totals-area { margin-top: auto; }
+
+  .total-divider {
+    border: none;
+    border-top: 1px solid rgba(255,255,255,0.12);
+    margin: 20px 0;
+  }
+
+  .total-row {
+    display: flex;
+    justify-content: space-between;
+    font-size: 0.83rem;
+    margin-bottom: 8px;
+    color: rgba(253,246,236,0.65);
+  }
+
+  .total-row.grand {
+    font-size: 1.1rem;
+    font-weight: 500;
+    color: var(--cream);
+    margin-bottom: 20px;
+  }
+
+  .total-row.grand .amount { color: var(--caramel); font-family: 'Playfair Display', serif; font-size: 1.3rem; }
+
+  /* CTA */
+  .order-btn {
+    width: 100%;
+    padding: 18px;
+    background: var(--caramel);
+    color: white;
+    border: none;
+    border-radius: 14px;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 1rem;
+    font-weight: 500;
+    letter-spacing: 0.05em;
+    cursor: pointer;
+    transition: all 0.22s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+  }
+
+  .order-btn:hover:not(:disabled) {
+    background: #b5722e;
+    transform: translateY(-1px);
+    box-shadow: 0 8px 28px rgba(200,129,58,0.45);
+  }
+
+  .order-btn:disabled {
+    opacity: 0.35;
+    cursor: not-allowed;
+  }
+
+  /* Toast */
+  .toast {
+    position: fixed;
+    bottom: 30px;
+    left: 50%;
+    transform: translateX(-50%) translateY(80px);
+    background: var(--espresso);
+    color: var(--cream);
+    border: 1px solid var(--caramel);
+    border-radius: 50px;
+    padding: 14px 28px;
+    font-size: 0.88rem;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    z-index: 1000;
+    transition: transform 0.35s cubic-bezier(0.34, 1.56, 0.64, 1);
+    white-space: nowrap;
+  }
+
+  .toast.show { transform: translateX(-50%) translateY(0); }
+
+  /* Field label */
+  .field-label {
+    font-size: 0.78rem;
+    font-weight: 500;
+    color: var(--bark);
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    margin-bottom: 12px;
+    display: block;
+  }
+
+  /* Scroll indicator */
+  .items-list { flex: 1; overflow-y: auto; padding-right: 2px; }
+
+  @media (max-width: 900px) {
+    .layout { grid-template-columns: 1fr; }
+    .summary-panel { position: static; height: auto; }
+    .drink-grid { grid-template-columns: repeat(2, 1fr); }
+    .menu-panel { padding: 32px 24px; }
+    .summary-panel { padding: 32px 24px; }
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="logo">Brew <span>&</span> Bean</div>
+  <div class="header-tag">Artisan Coffee · Est. 2018</div>
+</header>
+
+<div class="layout">
+
+  <!-- MENU PANEL -->
+  <div class="menu-panel">
+    <div class="section-label">Step 1</div>
+    <h2 class="section-title">Choose your drink</h2>
+
+    <div class="drink-grid" id="drinkGrid">
+      <!-- Cards injected by JS -->
+    </div>
+
+    <hr class="divider">
+
+    <div class="section-label">Step 2</div>
+    <h2 class="section-title" style="font-size:1.5rem; margin-bottom:20px;">Pick your size</h2>
+
+    <div class="size-row" id="sizeRow">
+      <!-- Injected by JS -->
+    </div>
+
+    <hr class="divider">
+
+    <div class="section-label">Step 3</div>
+    <h2 class="section-title" style="font-size:1.5rem; margin-bottom:20px;">Add-ons</h2>
+
+    <div class="addons-grid" id="addonsGrid">
+      <!-- Injected by JS -->
+    </div>
+
+    <hr class="divider">
+
+    <div class="section-label">Step 4</div>
+    <h2 class="section-title" style="font-size:1.5rem; margin-bottom:20px;">Quantity</h2>
+
+    <div class="quantity-row">
+      <span class="qty-label">How many cups?</span>
+      <div class="qty-control">
+        <button class="qty-btn" id="qtyMinus">−</button>
+        <input class="qty-input" type="number" id="qtyInput" value="1" min="1" max="20">
+        <button class="qty-btn" id="qtyPlus">+</button>
+      </div>
+    </div>
+
+    <hr class="divider">
+
+    <span class="field-label">Special instructions (optional)</span>
+    <textarea class="instructions-area" id="instructions" placeholder="e.g. extra hot, oat milk, no sugar…" maxlength="200"></textarea>
+
+    <br><br>
+
+    <button class="order-btn" id="addToOrderBtn" style="background: var(--caramel); max-width: 280px;" onclick="addToOrder()">
+      ☕ Add to Order
+    </button>
+  </div>
+
+  <!-- SUMMARY PANEL -->
+  <div class="summary-panel">
+    <div class="summary-label">Your Order</div>
+    <div class="summary-title">Order<br>Summary</div>
+
+    <div class="items-list" id="itemsList">
+      <div class="empty-state" id="emptyState">
+        <div class="empty-icon">☕</div>
+        <div class="empty-text">Your cup awaits…<br>Start building your order.</div>
+      </div>
+    </div>
+
+    <div class="totals-area" id="totalsArea" style="display:none;">
+      <hr class="total-divider">
+      <div class="total-row"><span>Subtotal</span><span id="subtotalVal">$0.00</span></div>
+      <div class="total-row"><span>Tax (8%)</span><span id="taxVal">$0.00</span></div>
+      <div class="total-row grand"><span>Total</span><span class="amount" id="grandTotal">$0.00</span></div>
+      <button class="order-btn" onclick="placeOrder()">🛍️ Place Order</button>
+      <button class="order-btn" onclick="clearOrder()" style="background:transparent; border: 1px solid rgba(255,255,255,0.15); margin-top:10px; font-size:0.82rem; padding:12px; color:rgba(253,246,236,0.5);">Clear Order</button>
+    </div>
+
+    <div id="emptyTotals">
+      <hr class="total-divider">
+      <button class="order-btn" disabled>🛍️ Place Order</button>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast">
+  <span>✓</span><span id="toastMsg">Added to order!</span>
+</div>
+
+<script>
+const DRINKS = [
+  { id: 'espresso', icon: '☕', name: 'Espresso', desc: 'Pure, bold shot', price: 3.50 },
+  { id: 'latte', icon: '🥛', name: 'Latte', desc: 'Silky steamed milk', price: 4.75 },
+  { id: 'cappuccino', icon: '☁️', name: 'Cappuccino', desc: 'Airy foam top', price: 4.50 },
+  { id: 'coldBrew', icon: '🧊', name: 'Cold Brew', desc: '24hr steeped', price: 5.00 },
+  { id: 'matcha', icon: '🍵', name: 'Matcha Latte', desc: 'Ceremonial grade', price: 5.25 },
+  { id: 'mocha', icon: '🍫', name: 'Mocha', desc: 'Chocolate meets coffee', price: 5.00 },
+];
+
+const SIZES = [
+  { id: 'small', icon: '🥃', name: 'Small', oz: '8 oz', delta: 0 },
+  { id: 'medium', icon: '🧃', name: 'Medium', oz: '12 oz', delta: 0.75 },
+  { id: 'large', icon: '🥤', name: 'Large', oz: '16 oz', delta: 1.50 },
+];
+
+const ADDONS = [
+  { id: 'extraShot', name: 'Extra Shot', price: 0.75 },
+  { id: 'oatMilk', name: 'Oat Milk', price: 0.60 },
+  { id: 'vanillaSyrup', name: 'Vanilla Syrup', price: 0.50 },
+  { id: 'caramelDrizzle', name: 'Caramel Drizzle', price: 0.50 },
+  { id: 'whipCream', name: 'Whipped Cream', price: 0.60 },
+  { id: 'collagen', name: 'Collagen Boost', price: 1.25 },
+];
+
+let selectedDrink = null;
+let selectedSize = 'medium';
+let checkedAddons = new Set();
+let orderItems = [];
+
+// Render drinks
+const drinkGrid = document.getElementById('drinkGrid');
+DRINKS.forEach(d => {
+  const card = document.createElement('div');
+  card.className = 'drink-card';
+  card.dataset.id = d.id;
+  card.innerHTML = `
+    <span class="drink-icon">${d.icon}</span>
+    <div class="drink-name">${d.name}</div>
+    <div class="drink-desc">${d.desc}</div>
+    <div class="drink-price">$${d.price.toFixed(2)}</div>
+  `;
+  card.addEventListener('click', () => selectDrink(d.id));
+  drinkGrid.appendChild(card);
+});
+
+// Render sizes
+const sizeRow = document.getElementById('sizeRow');
+SIZES.forEach(s => {
+  const btn = document.createElement('button');
+  btn.className = 'size-btn' + (s.id === selectedSize ? ' selected' : '');
+  btn.dataset.id = s.id;
+  btn.innerHTML = `
+    <span class="size-icon">${s.icon}</span>
+    <span class="size-name">${s.name}</span>
+    <span class="size-oz">${s.oz}</span>
+    <span class="size-delta">${s.delta ? '+$' + s.delta.toFixed(2) : 'Base price'}</span>
+  `;
+  btn.addEventListener('click', () => selectSize(s.id));
+  sizeRow.appendChild(btn);
+});
+
+// Render add-ons
+const addonsGrid = document.getElementById('addonsGrid');
+ADDONS.forEach(a => {
+  const label = document.createElement('label');
+  label.className = 'addon-check';
+  label.dataset.id = a.id;
+  label.innerHTML = `
+    <input type="checkbox" value="${a.id}">
+    <div class="addon-box"></div>
+    <div class="addon-info">
+      <span class="addon-name">${a.name}</span>
+      <span class="addon-price">+$${a.price.toFixed(2)}</span>
+    </div>
+  `;
+  label.addEventListener('click', () => toggleAddon(a.id, label));
+  addonsGrid.appendChild(label);
+});
+
+function selectDrink(id) {
+  selectedDrink = id;
+  document.querySelectorAll('.drink-card').forEach(c => c.classList.remove('selected'));
+  document.querySelector(`.drink-card[data-id="${id}"]`).classList.add('selected');
+}
+
+function selectSize(id) {
+  selectedSize = id;
+  document.querySelectorAll('.size-btn').forEach(b => b.classList.remove('selected'));
+  document.querySelector(`.size-btn[data-id="${id}"]`).classList.add('selected');
+}
+
+function toggleAddon(id, el) {
+  if (checkedAddons.has(id)) {
+    checkedAddons.delete(id);
+    el.classList.remove('checked');
+  } else {
+    checkedAddons.add(id);
+    el.classList.add('checked');
+  }
+}
+
+// Quantity controls
+const qtyInput = document.getElementById('qtyInput');
+document.getElementById('qtyMinus').addEventListener('click', () => {
+  if (qtyInput.value > 1) qtyInput.value = parseInt(qtyInput.value) - 1;
+});
+document.getElementById('qtyPlus').addEventListener('click', () => {
+  if (qtyInput.value < 20) qtyInput.value = parseInt(qtyInput.value) + 1;
+});
+qtyInput.addEventListener('input', () => {
+  if (qtyInput.value < 1) qtyInput.value = 1;
+  if (qtyInput.value > 20) qtyInput.value = 20;
+});
+
+function calcItemPrice() {
+  if (!selectedDrink) return 0;
+  const drink = DRINKS.find(d => d.id === selectedDrink);
+  const size = SIZES.find(s => s.id === selectedSize);
+  const addonTotal = [...checkedAddons].reduce((sum, id) => {
+    return sum + (ADDONS.find(a => a.id === id)?.price || 0);
+  }, 0);
+  return drink.price + size.delta + addonTotal;
+}
+
+function addToOrder() {
+  if (!selectedDrink) {
+    showToast('Please choose a drink first!', '☕');
+    return;
+  }
+  const drink = DRINKS.find(d => d.id === selectedDrink);
+  const size = SIZES.find(s => s.id === selectedSize);
+  const addons = [...checkedAddons].map(id => ADDONS.find(a => a.id === id));
+  const qty = parseInt(qtyInput.value);
+  const unitPrice = calcItemPrice();
+  const instructions = document.getElementById('instructions').value.trim();
+
+  orderItems.push({ drink, size, addons, qty, unitPrice, instructions });
+  renderOrder();
+  showToast(`${drink.name} added!`, '✓');
+}
+
+function renderOrder() {
+  const list = document.getElementById('itemsList');
+  const empty = document.getElementById('emptyState');
+  const totals = document.getElementById('totalsArea');
+  const emptyTotals = document.getElementById('emptyTotals');
+
+  if (orderItems.length === 0) {
+    list.innerHTML = '';
+    list.appendChild(empty);
+    empty.style.display = 'flex';
+    empty.style.flexDirection = 'column';
+    totals.style.display = 'none';
+    emptyTotals.style.display = 'block';
+    return;
+  }
+
+  list.innerHTML = '';
+  orderItems.forEach((item, idx) => {
+    const el = document.createElement('div');
+    el.className = 'order-item';
+    const addonsHTML = item.addons.length
+      ? item.addons.map(a => `<span class="addon-tag">${a.name}</span>`).join('')
+      : '<span style="font-size:0.7rem; opacity:0.4; color:var(--foam)">No add-ons</span>';
+
+    el.innerHTML = `
+      <div class="order-drink">${item.drink.icon} ${item.drink.name}</div>
+      <div class="order-size">${item.size.name} · ${item.size.oz}</div>
+      <div class="order-addons">${addonsHTML}</div>
+      ${item.instructions ? `<div style="font-size:0.68rem; opacity:0.5; margin-bottom:8px; font-style:italic">"${item.instructions}"</div>` : ''}
+      <div class="order-row">
+        <span class="order-qty">×${item.qty}</span>
+        <span class="order-subtotal">$${(item.unitPrice * item.qty).toFixed(2)}</span>
+      </div>
+    `;
+    list.appendChild(el);
+  });
+
+  // Totals
+  const sub = orderItems.reduce((sum, i) => sum + i.unitPrice * i.qty, 0);
+  const tax = sub * 0.08;
+  const grand = sub + tax;
+
+  document.getElementById('subtotalVal').textContent = '$' + sub.toFixed(2);
+  document.getElementById('taxVal').textContent = '$' + tax.toFixed(2);
+  document.getElementById('grandTotal').textContent = '$' + grand.toFixed(2);
+
+  totals.style.display = 'block';
+  emptyTotals.style.display = 'none';
+}
+
+function clearOrder() {
+  orderItems = [];
+  renderOrder();
+}
+
+function placeOrder() {
+  const grand = orderItems.reduce((s, i) => s + i.unitPrice * i.qty, 0) * 1.08;
+  showToast(`Order placed! Total: $${grand.toFixed(2)}`, '🎉');
+  setTimeout(() => {
+    orderItems = [];
+    renderOrder();
+    selectedDrink = null;
+    document.querySelectorAll('.drink-card').forEach(c => c.classList.remove('selected'));
+    checkedAddons.clear();
+    document.querySelectorAll('.addon-check').forEach(el => el.classList.remove('checked'));
+    qtyInput.value = 1;
+    document.getElementById('instructions').value = '';
+    selectSize('medium');
+  }, 1500);
+}
+
+let toastTimer;
+function showToast(msg, icon = '✓') {
+  const toast = document.getElementById('toast');
+  document.getElementById('toastMsg').textContent = msg;
+  toast.querySelector('span').textContent = icon;
+  toast.classList.add('show');
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => toast.classList.remove('show'), 2800);
+}
+
+// Init
+renderOrder();
+</script>
+</body>
+</html>
