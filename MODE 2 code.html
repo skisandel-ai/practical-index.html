@@ -1,0 +1,754 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Brew & Bean - Order Online</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: Georgia, serif;
+      background-color: #f5ede0;
+      color: #2c1a0e;
+    }
+
+    /* HEADER */
+    header {
+      background-color: #2c1a0e;
+      color: #f5ede0;
+      padding: 16px 30px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    header h1 {
+      font-size: 26px;
+      color: #f5ede0;
+    }
+
+    header h1 span {
+      color: #c8813a;
+    }
+
+    header p {
+      font-size: 13px;
+      color: #d4a96a;
+      font-style: italic;
+    }
+
+    /* MAIN LAYOUT */
+    .main {
+      display: flex;
+      gap: 0;
+      max-width: 1100px;
+      margin: 30px auto;
+      background: white;
+      border: 1px solid #ddd;
+    }
+
+    /* LEFT FORM */
+    .form-area {
+      flex: 1;
+      padding: 30px;
+      border-right: 2px solid #f0e6d6;
+    }
+
+    .step-title {
+      font-size: 11px;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      color: #c8813a;
+      margin-bottom: 6px;
+    }
+
+    .section-heading {
+      font-size: 20px;
+      color: #2c1a0e;
+      margin-bottom: 16px;
+      border-bottom: 2px solid #f0e6d6;
+      padding-bottom: 8px;
+    }
+
+    /* DRINK CARDS */
+    .drink-grid {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px;
+      margin-bottom: 28px;
+    }
+
+    .drink-card {
+      width: calc(33.33% - 8px);
+      border: 2px solid #e8ddd0;
+      border-radius: 8px;
+      padding: 14px 12px;
+      background: #fdf6ec;
+      cursor: pointer;
+    }
+
+    .drink-card:hover {
+      border-color: #c8813a;
+      background: #fff8f0;
+    }
+
+    .drink-card input[type="radio"] {
+      display: none;
+    }
+
+    .drink-card input[type="radio"]:checked + .card-body {
+      color: #c8813a;
+    }
+
+    .drink-card:has(input:checked) {
+      border-color: #c8813a;
+      background: #fff8f0;
+    }
+
+    .card-body .icon {
+      font-size: 26px;
+      display: block;
+      margin-bottom: 6px;
+    }
+
+    .card-body .name {
+      font-size: 14px;
+      font-weight: bold;
+      display: block;
+      color: #2c1a0e;
+      margin-bottom: 2px;
+    }
+
+    .card-body .desc {
+      font-size: 11px;
+      color: #6b3f1f;
+      display: block;
+      margin-bottom: 6px;
+      font-style: italic;
+    }
+
+    .card-body .price {
+      font-size: 14px;
+      font-weight: bold;
+      color: #c8813a;
+    }
+
+    /* DIVIDER */
+    hr.divider {
+      border: none;
+      border-top: 2px solid #f0e6d6;
+      margin: 24px 0;
+    }
+
+    /* SIZE */
+    .size-row {
+      display: flex;
+      gap: 12px;
+      margin-bottom: 24px;
+    }
+
+    .size-option {
+      flex: 1;
+      border: 2px solid #e8ddd0;
+      border-radius: 8px;
+      padding: 14px 10px;
+      background: #fdf6ec;
+      cursor: pointer;
+      text-align: center;
+    }
+
+    .size-option:hover {
+      border-color: #c8813a;
+    }
+
+    .size-option input[type="radio"] {
+      display: none;
+    }
+
+    .size-option:has(input:checked) {
+      border-color: #c8813a;
+      background: #2c1a0e;
+      color: white;
+    }
+
+    .size-option:has(input:checked) .s-name {
+      color: white;
+    }
+
+    .size-option:has(input:checked) .s-oz {
+      color: #d4a96a;
+    }
+
+    .size-option:has(input:checked) .s-price {
+      color: #d4a96a;
+    }
+
+    .s-icon { font-size: 22px; display: block; margin-bottom: 4px; }
+    .s-name { font-size: 13px; font-weight: bold; color: #2c1a0e; display: block; }
+    .s-oz   { font-size: 11px; color: #6b3f1f; display: block; margin: 2px 0; }
+    .s-price{ font-size: 12px; color: #c8813a; font-weight: bold; display: block; }
+
+    /* ADDONS */
+    .addon-grid {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      margin-bottom: 24px;
+    }
+
+    .addon-item {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 10px 14px;
+      border: 2px solid #e8ddd0;
+      border-radius: 8px;
+      background: #fdf6ec;
+      cursor: pointer;
+    }
+
+    .addon-item:hover {
+      border-color: #c8813a;
+    }
+
+    .addon-item:has(input:checked) {
+      border-color: #c8813a;
+      background: #fff8f0;
+    }
+
+    .addon-item input[type="checkbox"] {
+      width: 16px;
+      height: 16px;
+      accent-color: #c8813a;
+      cursor: pointer;
+    }
+
+    .addon-name {
+      flex: 1;
+      font-size: 13px;
+      font-weight: bold;
+      color: #2c1a0e;
+      font-family: Georgia, serif;
+    }
+
+    .addon-price {
+      font-size: 13px;
+      color: #c8813a;
+      font-weight: bold;
+    }
+
+    /* QUANTITY */
+    .qty-row {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      margin-bottom: 20px;
+    }
+
+    .qty-label {
+      font-size: 14px;
+      font-weight: bold;
+      color: #2c1a0e;
+    }
+
+    .qty-row input[type="number"] {
+      width: 80px;
+      padding: 8px 10px;
+      border: 2px solid #e8ddd0;
+      border-radius: 6px;
+      font-size: 15px;
+      text-align: center;
+      font-family: Georgia, serif;
+      color: #2c1a0e;
+      background: #fdf6ec;
+    }
+
+    .qty-row input[type="number"]:focus {
+      outline: none;
+      border-color: #c8813a;
+    }
+
+    /* ADD BUTTON */
+    .add-btn {
+      background-color: #c8813a;
+      color: white;
+      border: none;
+      padding: 12px 28px;
+      font-size: 15px;
+      border-radius: 8px;
+      cursor: pointer;
+      font-family: Georgia, serif;
+      font-weight: bold;
+    }
+
+    .add-btn:hover {
+      background-color: #a86828;
+    }
+
+    /* RIGHT SUMMARY */
+    .summary-area {
+      width: 300px;
+      background-color: #2c1a0e;
+      color: #f5ede0;
+      padding: 28px 22px;
+    }
+
+    .summary-area h2 {
+      font-size: 22px;
+      color: white;
+      margin-bottom: 20px;
+      border-bottom: 1px solid rgba(255,255,255,0.15);
+      padding-bottom: 10px;
+    }
+
+    .empty-msg {
+      font-size: 13px;
+      color: #d4a96a;
+      font-style: italic;
+      text-align: center;
+      margin: 20px 0;
+    }
+
+    /* ORDER ITEM */
+    .order-item {
+      background: rgba(255,255,255,0.07);
+      border: 1px solid rgba(255,255,255,0.12);
+      border-radius: 8px;
+      padding: 12px;
+      margin-bottom: 10px;
+    }
+
+    .order-item .o-drink {
+      font-size: 14px;
+      font-weight: bold;
+      color: white;
+      display: block;
+      margin-bottom: 3px;
+    }
+
+    .order-item .o-size {
+      font-size: 11px;
+      color: #d4a96a;
+      display: block;
+      margin-bottom: 4px;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+    }
+
+    .order-item .o-addons {
+      font-size: 11px;
+      color: rgba(212,169,106,0.8);
+      display: block;
+      margin-bottom: 6px;
+      font-style: italic;
+    }
+
+    .order-item .o-bottom {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .order-item .o-qty {
+      font-size: 12px;
+      color: rgba(245,237,224,0.5);
+    }
+
+    .order-item .o-subtotal {
+      font-size: 14px;
+      font-weight: bold;
+      color: #c8813a;
+    }
+
+    /* TOTALS */
+    .totals {
+      margin-top: 16px;
+      border-top: 1px solid rgba(255,255,255,0.15);
+      padding-top: 14px;
+    }
+
+    .total-row {
+      display: flex;
+      justify-content: space-between;
+      font-size: 13px;
+      color: rgba(245,237,224,0.65);
+      margin-bottom: 6px;
+    }
+
+    .total-row.grand {
+      font-size: 16px;
+      font-weight: bold;
+      color: white;
+      border-top: 1px solid rgba(255,255,255,0.15);
+      padding-top: 10px;
+      margin-top: 6px;
+    }
+
+    .total-row.grand span:last-child {
+      color: #c8813a;
+      font-size: 18px;
+    }
+
+    /* PLACE ORDER BTN */
+    .place-btn {
+      width: 100%;
+      padding: 13px;
+      background-color: #c8813a;
+      color: white;
+      border: none;
+      border-radius: 8px;
+      font-size: 14px;
+      font-weight: bold;
+      cursor: pointer;
+      margin-top: 16px;
+      font-family: Georgia, serif;
+    }
+
+    .place-btn:hover {
+      background-color: #a86828;
+    }
+
+    .clear-btn {
+      width: 100%;
+      padding: 10px;
+      background: transparent;
+      color: rgba(245,237,224,0.45);
+      border: 1px solid rgba(255,255,255,0.2);
+      border-radius: 8px;
+      font-size: 12px;
+      cursor: pointer;
+      margin-top: 8px;
+      font-family: Georgia, serif;
+    }
+
+    .clear-btn:hover {
+      background: rgba(255,255,255,0.07);
+    }
+
+    /* FOOTER */
+    footer {
+      background-color: #2c1a0e;
+      color: #d4a96a;
+      text-align: center;
+      padding: 14px;
+      font-size: 13px;
+      margin-top: 30px;
+      font-style: italic;
+    }
+  </style>
+</head>
+<body>
+
+<!-- HEADER -->
+<header>
+  <h1>&#9749; Brew <span>&amp;</span> Bean</h1>
+  <p>Artisan Coffee &middot; Est. 2018</p>
+</header>
+
+<!-- MAIN -->
+<div class="main">
+
+  <!-- LEFT: ORDER FORM -->
+  <div class="form-area">
+
+    <!-- Step 1: Drink -->
+    <p class="step-title">Step 1</p>
+    <h2 class="section-heading">Choose Your Drink</h2>
+
+    <div class="drink-grid">
+
+      <label class="drink-card">
+        <input type="radio" name="drink" value="Espresso:290">
+        <div class="card-body">
+          <span class="icon">&#9749;</span>
+          <span class="name">Espresso</span>
+          <span class="desc">Pure, bold shot</span>
+          <span class="price">&#8377;290</span>
+        </div>
+      </label>
+
+      <label class="drink-card">
+        <input type="radio" name="drink" value="Latte:395">
+        <div class="card-body">
+          <span class="icon">&#127843;</span>
+          <span class="name">Latte</span>
+          <span class="desc">Silky steamed milk</span>
+          <span class="price">&#8377;395</span>
+        </div>
+      </label>
+
+      <label class="drink-card">
+        <input type="radio" name="drink" value="Cappuccino:375">
+        <div class="card-body">
+          <span class="icon">&#127849;</span>
+          <span class="name">Cappuccino</span>
+          <span class="desc">Airy foam top</span>
+          <span class="price">&#8377;375</span>
+        </div>
+      </label>
+
+      <label class="drink-card">
+        <input type="radio" name="drink" value="Cold Brew:415">
+        <div class="card-body">
+          <span class="icon">&#129398;</span>
+          <span class="name">Cold Brew</span>
+          <span class="desc">24hr steeped</span>
+          <span class="price">&#8377;415</span>
+        </div>
+      </label>
+
+      <label class="drink-card">
+        <input type="radio" name="drink" value="Matcha Latte:435">
+        <div class="card-body">
+          <span class="icon">&#127861;</span>
+          <span class="name">Matcha Latte</span>
+          <span class="desc">Ceremonial grade</span>
+          <span class="price">&#8377;435</span>
+        </div>
+      </label>
+
+      <label class="drink-card">
+        <input type="radio" name="drink" value="Mocha:415">
+        <div class="card-body">
+          <span class="icon">&#127849;</span>
+          <span class="name">Mocha</span>
+          <span class="desc">Chocolate meets coffee</span>
+          <span class="price">&#8377;415</span>
+        </div>
+      </label>
+
+    </div>
+
+    <hr class="divider">
+
+    <!-- Step 2: Size -->
+    <p class="step-title">Step 2</p>
+    <h2 class="section-heading">Choose Size</h2>
+
+    <div class="size-row">
+
+      <label class="size-option">
+        <input type="radio" name="size" value="Small:0">
+        <span class="s-icon">&#129347;</span>
+        <span class="s-name">Small</span>
+        <span class="s-oz">8 oz</span>
+        <span class="s-price">Base price</span>
+      </label>
+
+      <label class="size-option">
+        <input type="radio" name="size" value="Medium:60" checked>
+        <span class="s-icon">&#129355;</span>
+        <span class="s-name">Medium</span>
+        <span class="s-oz">12 oz</span>
+        <span class="s-price">+&#8377;60</span>
+      </label>
+
+      <label class="size-option">
+        <input type="radio" name="size" value="Large:125">
+        <span class="s-icon">&#129380;</span>
+        <span class="s-name">Large</span>
+        <span class="s-oz">16 oz</span>
+        <span class="s-price">+&#8377;125</span>
+      </label>
+
+    </div>
+
+    <hr class="divider">
+
+    <!-- Step 3: Add-ons -->
+    <p class="step-title">Step 3</p>
+    <h2 class="section-heading">Add-ons</h2>
+
+    <div class="addon-grid">
+
+      <label class="addon-item">
+        <input type="checkbox" id="a1" value="60">
+        <span class="addon-name">Extra Shot</span>
+        <span class="addon-price">+&#8377;60</span>
+      </label>
+
+      <label class="addon-item">
+        <input type="checkbox" id="a2" value="50">
+        <span class="addon-name">Oat Milk</span>
+        <span class="addon-price">+&#8377;50</span>
+      </label>
+
+      <label class="addon-item">
+        <input type="checkbox" id="a3" value="40">
+        <span class="addon-name">Vanilla Syrup</span>
+        <span class="addon-price">+&#8377;40</span>
+      </label>
+
+      <label class="addon-item">
+        <input type="checkbox" id="a4" value="40">
+        <span class="addon-name">Caramel Drizzle</span>
+        <span class="addon-price">+&#8377;40</span>
+      </label>
+
+      <label class="addon-item">
+        <input type="checkbox" id="a5" value="50">
+        <span class="addon-name">Whipped Cream</span>
+        <span class="addon-price">+&#8377;50</span>
+      </label>
+
+    </div>
+
+    <hr class="divider">
+
+    <!-- Step 4: Quantity -->
+    <p class="step-title">Step 4</p>
+    <h2 class="section-heading">Quantity</h2>
+
+    <div class="qty-row">
+      <span class="qty-label">How many cups?</span>
+      <input type="number" id="qty" value="1" min="1" max="20">
+    </div>
+
+    <button class="add-btn" onclick="addToOrder()">&#9749; Add to Order</button>
+
+  </div>
+
+  <!-- RIGHT: ORDER SUMMARY -->
+  <div class="summary-area">
+    <h2>Order Summary</h2>
+
+    <div id="order-list">
+      <p class="empty-msg">No items yet.<br>Start building your order!</p>
+    </div>
+
+    <div id="totals-block" style="display:none;">
+      <div class="totals">
+        <div class="total-row"><span>Subtotal</span><span id="subtotal">&#8377;0</span></div>
+        <div class="total-row"><span>Tax (8%)</span><span id="tax">&#8377;0</span></div>
+        <div class="total-row grand"><span>Total</span><span id="grand">&#8377;0</span></div>
+      </div>
+      <button class="place-btn" onclick="placeOrder()">Place Order</button>
+      <button class="clear-btn" onclick="clearOrder()">Clear Order</button>
+    </div>
+
+  </div>
+
+</div>
+
+<!-- FOOTER -->
+<footer>
+  &copy; 2024 Brew &amp; Bean &mdash; Where every cup tells a story.
+</footer>
+
+<script>
+  var orderItems = [];
+
+  var addonIds   = ['a1', 'a2', 'a3', 'a4', 'a5'];
+  var addonNames = ['Extra Shot', 'Oat Milk', 'Vanilla Syrup', 'Caramel Drizzle', 'Whipped Cream'];
+
+  function addToOrder() {
+    var drinkRadio = document.querySelector('input[name="drink"]:checked');
+    var sizeRadio  = document.querySelector('input[name="size"]:checked');
+    var qty = parseInt(document.getElementById('qty').value);
+
+    if (!drinkRadio) {
+      alert('Please choose a drink first!');
+      return;
+    }
+
+    var drinkParts = drinkRadio.value.split(':');
+    var drinkName  = drinkParts[0];
+    var drinkPrice = parseInt(drinkParts[1]);
+
+    var sizeParts = sizeRadio.value.split(':');
+    var sizeName  = sizeParts[0];
+    var sizeExtra = parseInt(sizeParts[1]);
+
+    var addons = [];
+    var addonTotal = 0;
+    for (var i = 0; i < addonIds.length; i++) {
+      var cb = document.getElementById(addonIds[i]);
+      if (cb.checked) {
+        addons.push(addonNames[i]);
+        addonTotal += parseInt(cb.value);
+        cb.checked = false;
+      }
+    }
+
+    var unitPrice = drinkPrice + sizeExtra + addonTotal;
+
+    orderItems.push({
+      drink: drinkName,
+      size: sizeName,
+      addons: addons,
+      qty: qty,
+      unitPrice: unitPrice
+    });
+
+    document.getElementById('qty').value = 1;
+    renderSummary();
+  }
+
+  function renderSummary() {
+    var listDiv = document.getElementById('order-list');
+    var totalsBlock = document.getElementById('totals-block');
+
+    if (orderItems.length === 0) {
+      listDiv.innerHTML = '<p class="empty-msg">No items yet.<br>Start building your order!</p>';
+      totalsBlock.style.display = 'none';
+      return;
+    }
+
+    var html = '';
+    for (var i = 0; i < orderItems.length; i++) {
+      var item = orderItems[i];
+      html += '<div class="order-item">';
+      html += '<span class="o-drink">' + item.drink + '</span>';
+      html += '<span class="o-size">' + item.size + '</span>';
+      if (item.addons.length > 0) {
+        html += '<span class="o-addons">' + item.addons.join(', ') + '</span>';
+      }
+      html += '<div class="o-bottom">';
+      html += '<span class="o-qty">x' + item.qty + '</span>';
+      html += '<span class="o-subtotal">&#8377;' + (item.unitPrice * item.qty) + '</span>';
+      html += '</div>';
+      html += '</div>';
+    }
+    listDiv.innerHTML = html;
+
+    var subtotal = 0;
+    for (var j = 0; j < orderItems.length; j++) {
+      subtotal += orderItems[j].unitPrice * orderItems[j].qty;
+    }
+    var tax   = Math.round(subtotal * 0.08);
+    var grand = subtotal + tax;
+
+    document.getElementById('subtotal').textContent = '\u20B9' + subtotal;
+    document.getElementById('tax').textContent      = '\u20B9' + tax;
+    document.getElementById('grand').textContent    = '\u20B9' + grand;
+
+    totalsBlock.style.display = 'block';
+  }
+
+  function clearOrder() {
+    orderItems = [];
+    renderSummary();
+  }
+
+  function placeOrder() {
+    if (orderItems.length === 0) {
+      alert('Your order is empty!');
+      return;
+    }
+    var subtotal = 0;
+    for (var i = 0; i < orderItems.length; i++) {
+      subtotal += orderItems[i].unitPrice * orderItems[i].qty;
+    }
+    var grand = subtotal + Math.round(subtotal * 0.08);
+    alert('Order placed!\nTotal: \u20B9' + grand + '\nThank you for choosing Brew & Bean! \u2615');
+    clearOrder();
+  }
+</script>
+
+</body>
+</html>
