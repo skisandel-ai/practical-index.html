@@ -609,9 +609,9 @@
 
     <div class="totals-area" id="totalsArea" style="display:none;">
       <hr class="total-divider">
-      <div class="total-row"><span>Subtotal</span><span id="subtotalVal">$0.00</span></div>
-      <div class="total-row"><span>Tax (8%)</span><span id="taxVal">$0.00</span></div>
-      <div class="total-row grand"><span>Total</span><span class="amount" id="grandTotal">$0.00</span></div>
+      <div class="total-row"><span>Subtotal</span><span id="subtotalVal">₹0.00</span></div>
+      <div class="total-row"><span>Tax (8%)</span><span id="taxVal">₹0.00</span></div>
+      <div class="total-row grand"><span>Total</span><span class="amount" id="grandTotal">₹0.00</span></div>
       <button class="order-btn" onclick="placeOrder()">🛍️ Place Order</button>
       <button class="order-btn" onclick="clearOrder()" style="background:transparent; border: 1px solid rgba(255,255,255,0.15); margin-top:10px; font-size:0.82rem; padding:12px; color:rgba(253,246,236,0.5);">Clear Order</button>
     </div>
@@ -629,27 +629,27 @@
 
 <script>
 const DRINKS = [
-  { id: 'espresso', icon: '☕', name: 'Espresso', desc: 'Pure, bold shot', price: 3.50 },
-  { id: 'latte', icon: '🥛', name: 'Latte', desc: 'Silky steamed milk', price: 4.75 },
-  { id: 'cappuccino', icon: '☁️', name: 'Cappuccino', desc: 'Airy foam top', price: 4.50 },
-  { id: 'coldBrew', icon: '🧊', name: 'Cold Brew', desc: '24hr steeped', price: 5.00 },
-  { id: 'matcha', icon: '🍵', name: 'Matcha Latte', desc: 'Ceremonial grade', price: 5.25 },
-  { id: 'mocha', icon: '🍫', name: 'Mocha', desc: 'Chocolate meets coffee', price: 5.00 },
+  { id: 'espresso', icon: '☕', name: 'Espresso', desc: 'Pure, bold shot', price: 199 },
+  { id: 'latte', icon: '🥛', name: 'Latte', desc: 'Silky steamed milk', price: 299 },
+  { id: 'cappuccino', icon: '☁️', name: 'Cappuccino', desc: 'Airy foam top', price: 279 },
+  { id: 'coldBrew', icon: '🧊', name: 'Cold Brew', desc: '24hr steeped', price: 349 },
+  { id: 'matcha', icon: '🍵', name: 'Matcha Latte', desc: 'Ceremonial grade', price: 369 },
+  { id: 'mocha', icon: '🍫', name: 'Mocha', desc: 'Chocolate meets coffee', price: 329 },
 ];
 
 const SIZES = [
   { id: 'small', icon: '🥃', name: 'Small', oz: '8 oz', delta: 0 },
-  { id: 'medium', icon: '🧃', name: 'Medium', oz: '12 oz', delta: 0.75 },
-  { id: 'large', icon: '🥤', name: 'Large', oz: '16 oz', delta: 1.50 },
+  { id: 'medium', icon: '🧃', name: 'Medium', oz: '12 oz', delta: 50 },
+  { id: 'large', icon: '🥤', name: 'Large', oz: '16 oz', delta: 100 },
 ];
 
 const ADDONS = [
-  { id: 'extraShot', name: 'Extra Shot', price: 0.75 },
-  { id: 'oatMilk', name: 'Oat Milk', price: 0.60 },
-  { id: 'vanillaSyrup', name: 'Vanilla Syrup', price: 0.50 },
-  { id: 'caramelDrizzle', name: 'Caramel Drizzle', price: 0.50 },
-  { id: 'whipCream', name: 'Whipped Cream', price: 0.60 },
-  { id: 'collagen', name: 'Collagen Boost', price: 1.25 },
+  { id: 'extraShot', name: 'Extra Shot', price: 49 },
+  { id: 'oatMilk', name: 'Oat Milk', price: 40 },
+  { id: 'vanillaSyrup', name: 'Vanilla Syrup', price: 30 },
+  { id: 'caramelDrizzle', name: 'Caramel Drizzle', price: 30 },
+  { id: 'whipCream', name: 'Whipped Cream', price: 40 },
+  { id: 'collagen', name: 'Collagen Boost', price: 89 },
 ];
 
 let selectedDrink = null;
@@ -667,7 +667,7 @@ DRINKS.forEach(d => {
     <span class="drink-icon">${d.icon}</span>
     <div class="drink-name">${d.name}</div>
     <div class="drink-desc">${d.desc}</div>
-    <div class="drink-price">$${d.price.toFixed(2)}</div>
+    <div class="drink-price">₹${d.price}</div>
   `;
   card.addEventListener('click', () => selectDrink(d.id));
   drinkGrid.appendChild(card);
@@ -683,7 +683,7 @@ SIZES.forEach(s => {
     <span class="size-icon">${s.icon}</span>
     <span class="size-name">${s.name}</span>
     <span class="size-oz">${s.oz}</span>
-    <span class="size-delta">${s.delta ? '+$' + s.delta.toFixed(2) : 'Base price'}</span>
+    <span class="size-delta">${s.delta ? '+₹' + s.delta.toFixed(2) : 'Base price'}</span>
   `;
   btn.addEventListener('click', () => selectSize(s.id));
   sizeRow.appendChild(btn);
@@ -700,7 +700,7 @@ ADDONS.forEach(a => {
     <div class="addon-box"></div>
     <div class="addon-info">
       <span class="addon-name">${a.name}</span>
-      <span class="addon-price">+$${a.price.toFixed(2)}</span>
+      <span class="addon-price">+₹${a.price.toFixed(2)}</span>
     </div>
   `;
   label.addEventListener('click', () => toggleAddon(a.id, label));
@@ -800,7 +800,7 @@ function renderOrder() {
       ${item.instructions ? `<div style="font-size:0.68rem; opacity:0.5; margin-bottom:8px; font-style:italic">"${item.instructions}"</div>` : ''}
       <div class="order-row">
         <span class="order-qty">×${item.qty}</span>
-        <span class="order-subtotal">$${(item.unitPrice * item.qty).toFixed(2)}</span>
+        <span class="order-subtotal">₹${(item.unitPrice * item.qty).toFixed(2)}</span>
       </div>
     `;
     list.appendChild(el);
@@ -811,9 +811,9 @@ function renderOrder() {
   const tax = sub * 0.08;
   const grand = sub + tax;
 
-  document.getElementById('subtotalVal').textContent = '$' + sub.toFixed(2);
-  document.getElementById('taxVal').textContent = '$' + tax.toFixed(2);
-  document.getElementById('grandTotal').textContent = '$' + grand.toFixed(2);
+  document.getElementById('subtotalVal').textContent = '₹' + sub.toFixed(2);
+  document.getElementById('taxVal').textContent = '₹' + tax.toFixed(2);
+  document.getElementById('grandTotal').textContent = '₹' + grand.toFixed(2);
 
   totals.style.display = 'block';
   emptyTotals.style.display = 'none';
@@ -826,7 +826,7 @@ function clearOrder() {
 
 function placeOrder() {
   const grand = orderItems.reduce((s, i) => s + i.unitPrice * i.qty, 0) * 1.08;
-  showToast(`Order placed! Total: $${grand.toFixed(2)}`, '🎉');
+  showToast(`Order placed! Total: ₹${grand.toFixed(2)}`, '🎉');
   setTimeout(() => {
     orderItems = [];
     renderOrder();
