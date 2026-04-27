@@ -27,7 +27,6 @@
     overflow-x: hidden;
   }
 
-  /* Grain overlay */
   body::before {
     content: '';
     position: fixed;
@@ -37,8 +36,6 @@
     z-index: 999;
     opacity: 0.5;
   }
-
-  /* Header */
   header {
     background: var(--espresso);
     color: var(--cream);
@@ -68,7 +65,6 @@
     font-weight: 300;
   }
 
-  /* Layout */
   .layout {
     display: grid;
     grid-template-columns: 1fr 380px;
@@ -78,7 +74,6 @@
     min-height: calc(100vh - 68px);
   }
 
-  /* LEFT: Menu builder */
   .menu-panel {
     padding: 48px 48px 48px 48px;
     border-right: 1.5px solid var(--mist);
@@ -101,7 +96,6 @@
     line-height: 1.15;
   }
 
-  /* Drink cards */
   .drink-grid {
     display: grid;
     grid-template-columns: repeat(3, 1fr);
@@ -170,14 +164,12 @@
     color: var(--caramel);
   }
 
-  /* Divider */
   .divider {
     border: none;
     border-top: 1.5px solid var(--mist);
     margin: 32px 0;
   }
 
-  /* Size selector */
   .size-row {
     display: flex;
     gap: 12px;
@@ -208,7 +200,6 @@
   .size-oz { font-size: 0.68rem; color: var(--bark); opacity: 0.65; display: block; }
   .size-delta { font-size: 0.7rem; color: var(--caramel); font-weight: 500; display: block; margin-top: 2px; }
 
-  /* Add-ons */
   .addons-grid {
     display: grid;
     grid-template-columns: repeat(2, 1fr);
@@ -315,7 +306,6 @@
   .qty-input::-webkit-inner-spin-button,
   .qty-input::-webkit-outer-spin-button { -webkit-appearance: none; }
 
-  /* Special instructions */
   .instructions-area {
     width: 100%;
     border: 2px solid var(--mist);
@@ -334,7 +324,6 @@
   .instructions-area:focus { border-color: var(--latte); }
   .instructions-area::placeholder { color: var(--bark); opacity: 0.5; }
 
-  /* RIGHT: Order summary */
   .summary-panel {
     background: var(--espresso);
     color: var(--cream);
@@ -361,8 +350,6 @@
     margin-bottom: 32px;
     line-height: 1.2;
   }
-
-  /* Order item display */
   .order-item {
     background: rgba(255,255,255,0.06);
     border: 1px solid rgba(255,255,255,0.1);
@@ -416,7 +403,6 @@
   .order-qty { font-size: 0.78rem; color: rgba(253,246,236,0.5); }
   .order-subtotal { font-size: 0.9rem; font-weight: 500; color: var(--caramel); }
 
-  /* Empty state */
   .empty-state {
     flex: 1;
     display: flex;
@@ -431,7 +417,6 @@
   .empty-icon { font-size: 3.5rem; margin-bottom: 14px; }
   .empty-text { font-family: 'Playfair Display', serif; font-size: 1.1rem; font-style: italic; }
 
-  /* Totals */
   .totals-area { margin-top: auto; }
 
   .total-divider {
@@ -457,7 +442,6 @@
 
   .total-row.grand .amount { color: var(--caramel); font-family: 'Playfair Display', serif; font-size: 1.3rem; }
 
-  /* CTA */
   .order-btn {
     width: 100%;
     padding: 18px;
@@ -487,8 +471,6 @@
     opacity: 0.35;
     cursor: not-allowed;
   }
-
-  /* Toast */
   .toast {
     position: fixed;
     bottom: 30px;
@@ -509,8 +491,6 @@
   }
 
   .toast.show { transform: translateX(-50%) translateY(0); }
-
-  /* Field label */
   .field-label {
     font-size: 0.78rem;
     font-weight: 500;
@@ -521,7 +501,6 @@
     display: block;
   }
 
-  /* Scroll indicator */
   .items-list { flex: 1; overflow-y: auto; padding-right: 2px; }
 
   @media (max-width: 900px) {
@@ -541,14 +520,12 @@
 </header>
 
 <div class="layout">
-
-  <!-- MENU PANEL -->
   <div class="menu-panel">
     <div class="section-label">Step 1</div>
     <h2 class="section-title">Choose your drink</h2>
 
     <div class="drink-grid" id="drinkGrid">
-      <!-- Cards injected by JS -->
+  
     </div>
 
     <hr class="divider">
@@ -557,7 +534,7 @@
     <h2 class="section-title" style="font-size:1.5rem; margin-bottom:20px;">Pick your size</h2>
 
     <div class="size-row" id="sizeRow">
-      <!-- Injected by JS -->
+     
     </div>
 
     <hr class="divider">
@@ -566,7 +543,6 @@
     <h2 class="section-title" style="font-size:1.5rem; margin-bottom:20px;">Add-ons</h2>
 
     <div class="addons-grid" id="addonsGrid">
-      <!-- Injected by JS -->
     </div>
 
     <hr class="divider">
@@ -594,8 +570,6 @@
       ☕ Add to Order
     </button>
   </div>
-
-  <!-- SUMMARY PANEL -->
   <div class="summary-panel">
     <div class="summary-label">Your Order</div>
     <div class="summary-title">Order<br>Summary</div>
@@ -657,7 +631,6 @@ let selectedSize = 'medium';
 let checkedAddons = new Set();
 let orderItems = [];
 
-// Render drinks
 const drinkGrid = document.getElementById('drinkGrid');
 DRINKS.forEach(d => {
   const card = document.createElement('div');
@@ -672,8 +645,6 @@ DRINKS.forEach(d => {
   card.addEventListener('click', () => selectDrink(d.id));
   drinkGrid.appendChild(card);
 });
-
-// Render sizes
 const sizeRow = document.getElementById('sizeRow');
 SIZES.forEach(s => {
   const btn = document.createElement('button');
@@ -689,7 +660,6 @@ SIZES.forEach(s => {
   sizeRow.appendChild(btn);
 });
 
-// Render add-ons
 const addonsGrid = document.getElementById('addonsGrid');
 ADDONS.forEach(a => {
   const label = document.createElement('label');
@@ -729,7 +699,6 @@ function toggleAddon(id, el) {
   }
 }
 
-// Quantity controls
 const qtyInput = document.getElementById('qtyInput');
 document.getElementById('qtyMinus').addEventListener('click', () => {
   if (qtyInput.value > 1) qtyInput.value = parseInt(qtyInput.value) - 1;
@@ -849,8 +818,6 @@ function showToast(msg, icon = '✓') {
   clearTimeout(toastTimer);
   toastTimer = setTimeout(() => toast.classList.remove('show'), 2800);
 }
-
-// Init
 renderOrder();
 </script>
 </body>
